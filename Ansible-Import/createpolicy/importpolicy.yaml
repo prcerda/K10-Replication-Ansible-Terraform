@@ -1,0 +1,67 @@
+- name: "Create namespace for app  {{ strings.value.app }}"
+  k8s:
+    name: "{{ strings.value.app }}" # defining the namespace
+    api_version: v1
+    kind: Namespace
+    state: present
+  when: (strings.value.app != "kasten-io" and strings.value.app != "kasten-io-cluster")
+
+#Create Import policies WITH Transforms        
+- name: "Create import policy for app  {{ strings.value.app }}"
+  kubernetes.core.k8s:
+    state: present
+    definition:
+        apiVersion: config.kio.kasten.io/v1alpha1
+        kind: Policy
+        metadata:
+          name: "{{ strings.value.policy + '-import' }}"
+          namespace: kasten-io
+        spec:
+          comment: Import Policy
+          frequency: "@daily"
+          actions:
+          - action: import
+            importParameters:
+              profile:
+                namespace: kasten-io
+                name: "{{ profile_name }}"
+              receiveString: "{{ strings.value.string }}"
+          - action: restore
+            restoreParameters:
+              dataOnly: false
+              #restoreClusterResources: true
+              targetNamespace: "{{ strings.value.app }}"              
+              transforms:
+                - subject: {}
+                  json: null
+                  transformSetRef:
+                    name: dr-storageclass
+                    namespace: kasten-io
+  when: (strings.value.string != "" and strings.value.app != "kasten-io-cluster" and storageclass != "")
+
+  #Create Import policies WITHOUT Transforms        
+- name: "Create import policy for app  {{ strings.value.app }}"
+  kubernetes.core.k8s:
+    state: present
+    definition:
+        apiVersion: config.kio.kasten.io/v1alpha1
+        kind: Policy
+        metadata:
+          name: "{{ strings.value.policy + '-import' }}"
+          namespace: kasten-io
+        spec:
+          comment: Import Policy
+          frequency: "@daily"
+          actions:
+          - action: import
+            importParameters:
+              profile:
+                namespace: kasten-io
+                name: "{{ profile_name }}"
+              receiveString: "{{ strings.value.string }}"
+          - action: restore
+            restoreParameters:
+              dataOnly: false
+              #restoreClusterResources: true
+              targetNamespace: "{{ strings.value.app }}"              
+  when: (strings.value.string != "" and strings.value.app != "kasten-io-cluster" and storageclass == "")

@@ -1,0 +1,43 @@
+---
+- name: K10 Policy Creation
+  hosts: localhost
+  collections:
+    - kubernetes.core
+  vars_files:
+    - vars/global_vars.yaml    
+  tasks:
+
+#Create TransformSet
+    - name: "Create sample TransformSet"
+      kubernetes.core.k8s:
+        state: present
+        definition:
+            kind: TransformSet
+            apiVersion: config.kio.kasten.io/v1alpha1
+            metadata:
+              name: dr-storageclass
+              namespace: kasten-io
+            spec:
+              comment: |
+                Modify the storageClass to change storage tier.
+              transforms:
+                - subject:
+                    resource: persistentvolumeclaims
+                  name: ChangeStorageClass
+                  json:
+                    - op: replace
+                      path: /spec/storageClassName
+                      value: "{{ storageclass }}"                   
+      when: ( storageclass != "")
+
+    - name: Read buckets from CSV file and return a dictionary
+      read_csv:
+        path: createpolicy/import_details.csv
+        key: policy
+      register: import_string
+      delegate_to: localhost
+    - name: Create import policies for apps
+      include_tasks: createpolicy/importpolicy.yaml
+      loop: "{{ import_string.dict|dict2items }}" 
+      loop_control:
+        loop_var:  strings    

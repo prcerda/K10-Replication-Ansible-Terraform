@@ -1,0 +1,23 @@
+#Global Variables
+storageclass: "csi-sc-k10-aws-csi-eks"  #Name of the Storage Class in the target Kubernetes cluster for importing applications.  Mandatory ONLY if the target Kubernetes cluster has a different StorageClass name.
+frequency: "@daily"  #Frequency of for the Importing Policy to run.
+profile_name: "profile-gcs-gcs-k10-1726650020"   #Name of the Location Profile containing the Application backups from Production Kubernetes cluster
+bucket_name: "gcs-k10-1726650020"  #Name of the AWS/Azure/GCS bucket containing the Application backups from Production Kubernetes cluster
+region: "europe-west2"  #Bucket Region when applicable
+bucket_type: "gcs"   #Type of the bucket containing the application's backup data.  Possible values awss3 / azblob / gcs
+
+#Azure Variables
+
+tenantID: "aaaaaaaa-431b-bbbb-add7-123456789012"  #Azure Tenant ID
+azureclientID: "aaaaaaaaaaaaaaaaaaaaaaaaaaaa" #Azure Client ID
+Azureclientsecret: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" # Azure Client Secret
+azure_storage_key: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"  #Azure Storage Access Key 
+azure_storage_env: "AzureCloud"  #AzureCloud is the default in Azure.  More info in https://docs.kasten.io/latest/usage/configuration.html#azure-storage
+
+#AWS Variables
+aws_access_key_id: "AAAAAAAAAAAAAAAAAAAA" #AWS Access Key ID
+aws_secret_access_key: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"  #AWS Secret Access Key
+
+#Google Cloud Variables
+project_id: "gcloud-project-id"   #Google Cloud Project ID
+
