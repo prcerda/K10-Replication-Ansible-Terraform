@@ -1,0 +1,26 @@
+---
+- name: K10 Location Profile Creation
+  hosts: localhost
+  vars:
+    k10_ns: "kasten-io"
+  vars_files:
+    - vars/global_vars.yaml 
+  collections:
+    - kubernetes.core
+  tasks:
+    - name: Read buckets from CSV file and return a dictionary
+      read_csv:
+        path: createpolicy/import_details.csv
+        key: policy
+      register: import_string
+      delegate_to: localhost
+    - name: Run import policies for apps
+      include_tasks: restoreapps/runrestoreapp.yaml
+      loop: "{{ import_string.dict|dict2items }}" 
+      loop_control:
+        loop_var:  strings    
+
+      
+
+
+      

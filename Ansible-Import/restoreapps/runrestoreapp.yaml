@@ -1,0 +1,17 @@
+#Create Import policies WITH Transforms        
+- name: "Run import policy for app  {{ strings.value.app }}"
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      kind: RunAction
+      apiVersion: actions.kio.kasten.io/v1alpha1
+      metadata:
+        generateName: run-import-
+        namespace: kasten-io
+      spec:
+        subject:
+          apiVersion: config.kio.kasten.io/v1alpha1
+          kind: Policy
+          name: "{{ strings.value.policy + '-import' }}"
+          namespace: kasten-io
+  when: (strings.value.string != "" and strings.value.app != "kasten-io-cluster" and storageclass != "")          
